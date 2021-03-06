@@ -24,27 +24,25 @@ mongoose.connect(process.env.MONGO_URI, {
     process.exit(-1)
 });
 
-
-
-
 const listener = app.listen(process.env.PORT || 3000, () => {
     console.log('Your app is listening on port ' + listener.address().port)
 })
-
-
 
 let newExercise = new mongoose.Schema({
     description: { type: String, required: true },
     duration: { type: Number, required: true },
     date: String
 })
-let Exercise = mongoose.model('Exercise', newExercise)
+
+
 
 let newUserSchema = new mongoose.Schema({
     username: { type: String, required: true },
-    log: { newExercise }
+    log: [newExercise]
 })
 let User = mongoose.model('User', newUserSchema)
+let Exercise = mongoose.model('Exercise', newExercise)
+
 let bodyParser = require('body-parser');
 
 
@@ -88,7 +86,7 @@ app.get('/api/exercise/Users',
     (req, res) => {
         User.find({}, (err, result) => {
             if (!err) {
-                console.log(result)
+                //console.log(result)
                 res.json(result)
             }
         })
@@ -99,31 +97,43 @@ app.post('/api/exercise/add',
     bodyParser.urlencoded({ extended: false }),
     (req, res) => {
         //getting input user-id
-        let inputUserId = req.body.userId
-            //searching for username in db
+        let inputUserId = req.body.userId,
+            inputDescription = req.body.description,
+            inputDuration = parseInt(req.body.duration),
+            inputDate = req.body.date;
+
+        if (inputDate === '') {
+            inputDate = new Date().toISOString().substring(0, 10)
+        }
+        //searching for username in db
         User.findOne({ _id: inputUserId })
             .exec((err, result) => {
                 console.log(err, result)
                 if (result == null) {
                     res.send("UserID not avilble. Go to Home and genrate new one.")
                 } else {
-                    let responseObject = {}
-                    responseObject['userId'] = inputUserId;
-                    responseObject['description'] = req.body.description;
-                    responseObject['duration'] = req.body.duration;
-                    responseObject['date'] = req.body.date;
-                    console.log(responseObject)
-
-                    let addExercise = new Exercise(responseObject)
-                    addExercise.save((err, savedUser) => {
-                        if (err) {
-                            // if we get error while adding log it.
-                            console.log(err)
-                        } else {
-                            // no error
-                            res.json(responseObject)
-                        }
+                    console.log("found user")
+                    let addExercise = new Exercise({
+                        description: inputDescription,
+                        duration: inputDuration,
+                        date: inputDate
                     })
+
+                    console.log("Adding data:", addExercise)
+                    User.findByIdAndUpdate(
+                        inputUserId, { $push: { log: addExercise } }, { new: true },
+                        (error, updatedUser) => {
+                            if (!error) {
+                                console.log(updatedUser)
+                                let responseObject = {}
+                                responseObject['userId'] = updatedUser.id;
+                                responseObject['description'] = updatedUser.description;
+                                responseObject['duration'] = updatedUser.duration;
+                                responseObject['date'] = updatedUser.date;
+                                console.log(responseObject)
+                                res.json(responseObject)
+                            }
+                        })
                 }
             })
     }
