@@ -153,10 +153,39 @@ app.get('/api/exercise/log', (req, res) => {
                 res.send("UserID not avilble. Go to Home and genrate new one.")
             } else {
                 console.log("creating a response object")
-                let responseObject = receivedObject;
+
+                let responseObject = {}
+                responseObject = receivedObject
+
+                if (req.query.from || req.query.to) {
+
+
+                    let fromDate = new Date(0).toISOString().substring(0, 10),
+                        toDate = new Date().toISOString().substring(0, 10)
+
+
+                    if (req.query.from) {
+                        fromDate = new Date(req.query.from).toISOString().substring(0, 10)
+                    }
+                    if (req.query.to) {
+                        toDate = new Date(req.query.to).toISOString().substring(0, 10)
+                    }
+
+                    responseObject.log = responseObject.log.filter((session) => {
+                        let sessionDate = new Date(session.date).getTime()
+
+                        return sessionDate >= fromDate && sessionDate <= toDate
+
+                    })
+                    if (req.query.limit) {
+                        responseObject.log = responseObject.log.slice(0, req.query.limit)
+                    }
+                }
+
+                responseObject = responseObject.toJSON()
                 console.log("creating count variable for log array")
-                responseObject['count'] = receivedObject.log.length
-                console.log(responseObject['count'])
+                responseObject.count = receivedObject.log.length
+                console.log(responseObject.count)
                 console.log("your data is :", responseObject)
                 console.log("sending json object in  3....2.....1")
                 res.json(responseObject)
