@@ -126,7 +126,7 @@ app.post('/api/exercise/add',
                                 console.log("No errors, Data saved.....Getting Json result for added Exercise")
                                     // console.log(updatedUser)
                                 let responseObject = {}
-                                responseObject['userId'] = inputUserId;
+                                responseObject['_id'] = inputUserId;
                                 responseObject['username'] = updatedUser.username;
                                 responseObject['description'] = inputDescription;
                                 responseObject['duration'] = inputDuration;
