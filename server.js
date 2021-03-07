@@ -155,7 +155,7 @@ app.get('/api/exercise/log', (req, res) => {
                 console.log("creating a response object")
                 let responseObject = receivedObject;
                 console.log("creating count variable for log array")
-                responseObject.count = receivedObject.log.length
+                responseObject['count'] = receivedObject.log.length
                 console.log(responseObject['count'])
                 console.log("your data is :", responseObject)
                 console.log("sending json object in  3....2.....1")
