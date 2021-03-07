@@ -130,7 +130,7 @@ app.post('/api/exercise/add',
                                 responseObject['username'] = updatedUser.username;
                                 responseObject['description'] = inputDescription;
                                 responseObject['duration'] = inputDuration;
-                                responseObject['date'] = inputDate;
+                                responseObject['date'] = new Date(addExercise.date).toDateString();
                                 // console.log(responseObject)
                                 res.json(responseObject)
                             }
@@ -161,7 +161,7 @@ app.get('/api/exercise/log', (req, res) => {
 
 
                     let fromDate = new Date(0).toISOString().substring(0, 10),
-                        toDate = new Date().toISOString().substring(0, 10)
+                        toDate = new Date().toISOString().substring(0, 10);
 
 
                     if (req.query.from) {
