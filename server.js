@@ -139,3 +139,28 @@ app.post('/api/exercise/add',
             })
     }
 )
+
+app.get('/api/exercise/log', (req, res) => {
+    let inputUserId = req.query.userId;
+
+    User.findOne({ _id: inputUserId }, (err, receivedObject) => {
+        if (err) {
+            console.log(err)
+        } else {
+            console.log("no error, got the object")
+            if (receivedObject == null) {
+                console.log("unfortunatly its empty")
+                res.send("UserID not avilble. Go to Home and genrate new one.")
+            } else {
+                console.log("creating a response object")
+                let responseObject = receivedObject;
+                console.log("creating count variable for log array")
+                responseObject.count = receivedObject.log.length
+                console.log(responseObject['count'])
+                console.log("your data is :", responseObject)
+                console.log("sending json object in  3....2.....1")
+                res.json(responseObject)
+            }
+        }
+    })
+})
