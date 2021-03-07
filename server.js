@@ -119,17 +119,21 @@ app.post('/api/exercise/add',
                         date: inputDate
                     })
 
+
+
                     console.log("Adding data:", addExercise)
                     User.findByIdAndUpdate(
                         inputUserId, { $push: { log: addExercise } }, { new: true },
                         (error, updatedUser) => {
                             if (!error) {
                                 console.log(updatedUser)
+                                console.log(updatedUser.log)
                                 let responseObject = {}
-                                responseObject['userId'] = updatedUser.id;
-                                responseObject['description'] = updatedUser.description;
-                                responseObject['duration'] = updatedUser.duration;
-                                responseObject['date'] = updatedUser.date;
+                                responseObject['userId'] = inputUserId;
+                                responseObject['username'] = updatedUser.username;
+                                responseObject['description'] = inputDescription;
+                                responseObject['duration'] = inputDuration;
+                                responseObject['date'] = inputDate;
                                 console.log(responseObject)
                                 res.json(responseObject)
                             }
