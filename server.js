@@ -108,7 +108,7 @@ app.post('/api/exercise/add',
         //searching for username in db
         User.findOne({ _id: inputUserId })
             .exec((err, result) => {
-                console.log(err, result)
+                //console.log(err, result)
                 if (result == null) {
                     res.send("UserID not avilble. Go to Home and genrate new one.")
                 } else {
@@ -118,7 +118,8 @@ app.post('/api/exercise/add',
                         duration: inputDuration,
                         date: inputDate
                     })
-                    console.log("Adding data:", addExercise)
+
+                    //console.log("Adding data:", addExercise)
                     User.findByIdAndUpdate(
                         inputUserId, { $push: { log: addExercise } }, { new: true },
                         (error, updatedUser) => {
@@ -158,22 +159,22 @@ app.get('/api/exercise/log', (req, res) => {
                 responseObject = receivedObject
 
                 if (req.query.from || req.query.to) {
+                    console.log(req.query.from)
+                    console.log(req.query.to)
 
+                    let fromDate = new Date(0)
+                    toDate = new Date()
 
-                    let fromDate = new Date(0).toISOString().substring(0, 10),
-                        toDate = new Date().toISOString().substring(0, 10);
-
-
+                    console.log(fromDate, toDate)
                     if (req.query.from) {
-                        fromDate = new Date(req.query.from).toISOString().substring(0, 10)
+                        fromDate = new Date(req.query.from)
                     }
                     if (req.query.to) {
-                        toDate = new Date(req.query.to).toISOString().substring(0, 10)
+                        toDate = new Date(req.query.to)
                     }
-
+                    console.log(fromDate, toDate)
                     responseObject.log = responseObject.log.filter((session) => {
                         let sessionDate = new Date(session.date).getTime()
-
                         return sessionDate >= fromDate && sessionDate <= toDate
 
                     })
